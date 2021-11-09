@@ -6,8 +6,9 @@ app.set('view engine', 'ejs');
 
 
 const urlDatabase = {
-  'b2xVn2': 'http://www.lighthouselabs.ca',
-  "9sm5xK": "http://www.google.com"
+  "9sm5xK": "http://www.google.com",
+  "b2Vxn2": "http://www.github.com",
+  "8sm5xK": "http://www.lighthouselabs.ca"
 };
 
 app.get('/', (req, res) => {
@@ -20,9 +21,11 @@ app.get('/urls', (req, res)=> {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-   
-  
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase};
+  const id = req.params.shortURL;
+  console.log(typeof id);
+  const longURL = urlDatabase[req.params.shortURL];
+  console.log(longURL);
+  const templateVars = { shortURL: id, longURL: longURL};
   res.render("urls_show", templateVars);
 });
 
