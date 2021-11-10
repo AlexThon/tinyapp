@@ -42,6 +42,7 @@ app.post("/urls", (req, res) => {
   res.redirect('/urls');
 });
 
+// READ short and long URLS
 app.get("/urls/:shortURL", (req, res) => {
   const id = req.params.shortURL;
   const longURL = urlDatabase[req.params.shortURL];
@@ -49,6 +50,7 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+// READ/DISPLAY LONG URL
 app.get('/u/:shortURL', (req, res) => {
   const shortURL = req.params.shortURL;
   const longURL = urlDatabase[shortURL];
@@ -56,7 +58,7 @@ app.get('/u/:shortURL', (req, res) => {
 
 });
 
-// Update long URL
+// UPDATE LONG URL
 app.post('/urls/:id', (req, res) => {
   const  shortURL = req.params.id;
   const content = req.body;
@@ -74,7 +76,7 @@ app.post('/urls/:shortURL/delete', (req, res) => {
   res.redirect('/urls');
 });
 
-// EDIT URL
+// handle EDIT BUTTON
 app.post('/urls/:id/edit', (req, res) => {
   res.redirect(`/urls/${req.params.id}`);
 });
