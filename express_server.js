@@ -36,7 +36,7 @@ app.post("/urls", (req, res) => {
   const newKey = Math.random().toString(36).substring(2,8);
   urlDatabase[newKey] = req.body.longURL;
   console.log(urlDatabase);
-  res.redirect("/urls");
+  res.redirect('/urls');
 });
 
 app.get("/urls/:shortURL", (req, res) => {
@@ -48,12 +48,24 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+app.get('/u/:shortURL', (req, res) => {
+  const shortURL = req.params.shortURL;
+  const longURL = urlDatabase[shortURL];
+  res.redirect(longURL);
+
+});
+
+// DELETE URL
+app.post('/urls/:shortURL/delete', (req, res) => {
+  const shortURL = req.params.shortURL;
+  delete urlDatabase[shortURL];
+  res.redirect('/urls');
+});
+
+
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
 });
 
 
 
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
-});
