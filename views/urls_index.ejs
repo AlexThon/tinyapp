@@ -30,7 +30,7 @@
             <td><%= url %></td>
             <td><%= urls[url] %></td>
             <td>
-              <form method="POST" action="/urls/:<%= shortURL %>">
+              <form method="POST" action="/urls/<%= url %>/edit">
                 <div class="form-group mb-2">
                   <input type="submit" value="Edit">
                 </div>
