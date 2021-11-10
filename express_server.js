@@ -3,7 +3,10 @@ const app = express();
 const PORT = 8080;
 
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(cookieParser);
 
 app.set('view engine', 'ejs');
 
@@ -75,6 +78,12 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 app.post('/urls/:id/edit', (req, res) => {
   res.redirect(`/urls/${req.params.id}`);
 });
+
+// ADD COOKIE
+app.post('/login', (req, res) => {
+  console.log("content is: ", req.body);
+});
+
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
