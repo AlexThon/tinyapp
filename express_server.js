@@ -41,9 +41,7 @@ app.post("/urls", (req, res) => {
 
 app.get("/urls/:shortURL", (req, res) => {
   const id = req.params.shortURL;
-  
   const longURL = urlDatabase[req.params.shortURL];
-  //console.log(longURL);
   const templateVars = { shortURL: id, longURL: longURL};
   res.render("urls_show", templateVars);
 });
@@ -56,7 +54,14 @@ app.get('/u/:shortURL', (req, res) => {
 });
 
 // Update long URL
-app.post('/')
+app.post('/urls/:id', (req, res) => {
+  const  shortURL = req.params.id;
+  const content = req.body;
+  urlDatabase[shortURL] = content.longURL;
+  
+  res.redirect('/urls');
+  
+});
 
 
 // DELETE URL
