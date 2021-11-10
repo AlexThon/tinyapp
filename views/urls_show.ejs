@@ -11,12 +11,26 @@
        <%- include('partials/_header') %>
   </header>
   <div class="card text-center">
+    
       <div class="card-header"></div>
       <div class="card-body">
         <h5 class="card-title">Tiny URL for: <%= longURL %></h5>
         <p class="card-text">Short URL: <a href="/u/<%= shortURL %>"><%= shortURL %></a></p>
       </div>
+       <h5>Edit</h5>
+      <form method="POST" action="/urls/<%= shortURL %>">
+        <lab>New URL</lab>
+            <input
+              style="width: 20em"
+              type="text"
+              name="<%= longURL %>"
+              id="<%= longURL %>"
+              value="<%= longURL %>"> 
+              <input type="submit" class="btn btn-primary" value="Submit" />
+      
+        </form>
     <div class="card-footer text-muted"></div>
+
   </div>
   <!-- Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
