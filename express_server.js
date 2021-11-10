@@ -55,6 +55,10 @@ app.get('/u/:shortURL', (req, res) => {
 
 });
 
+// Update long URL
+app.post('/')
+
+
 // DELETE URL
 app.post('/urls/:shortURL/delete', (req, res) => {
   const shortURL = req.params.shortURL;
