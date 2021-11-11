@@ -67,6 +67,11 @@ app.get('/u/:shortURL', (req, res) => {
 
 });
 
+// DISPLAYS REGISTRATION FORM
+// app.get('/register', (req, res) => {
+
+// })
+
 // UPDATE LONG URL
 app.post('/urls/:id', (req, res) => {
   const  shortURL = req.params.id;
