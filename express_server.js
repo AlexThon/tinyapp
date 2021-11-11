@@ -68,9 +68,14 @@ app.get('/u/:shortURL', (req, res) => {
 });
 
 // DISPLAYS REGISTRATION FORM
-// app.get('/register', (req, res) => {
-
-// })
+app.get('/register', (req, res) => {
+  // const email = req.params.email;
+  // const password = req.body.password;
+  // const username = null;
+  // const templateVars = { email: email, password: password, username: username};
+  
+  res.render('registration-form');
+});
 
 // UPDATE LONG URL
 app.post('/urls/:id', (req, res) => {
@@ -110,7 +115,7 @@ app.post('/login', (req, res) => {
 // HANDLE LOGOUT BY RESETTING COOKIE
 app.post('/logout', (req, res) => {
   res.clearCookie('username');
-  res.redirect('/urls');
+  res.send('Ok');
 });
 
 app.listen(PORT, () => {
