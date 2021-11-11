@@ -24,19 +24,27 @@ app.get('/', (req, res) => {
 
 
 app.get('/urls', (req, res)=> {
-  const templateVars = {urls: urlDatabase};
+  const username = req.cookies["username"];
+  console.log(username);
+  const templateVars = {urls: urlDatabase, username: username};
+
   res.render('urls_index', templateVars);
 });
 
 
 // Display a empty form to the client
 app.get('/urls/new', (req, res) => {
-  res.render('urls_new');
+  const username = req.cookies["username"];
+  console.log(username);
+  const templateVars = {username: username};
+
+  res.render('urls_new', templateVars);
 });
 
 // CREATE AND ADD URL TO DB
 app.post("/urls", (req, res) => {
   const newKey = Math.random().toString(36).substring(2,8);
+  
   urlDatabase[newKey] = req.body.longURL;
   console.log(urlDatabase);
   res.redirect('/urls');
@@ -44,9 +52,10 @@ app.post("/urls", (req, res) => {
 
 // READ short and long URLS
 app.get("/urls/:shortURL", (req, res) => {
-  const id = req.params.shortURL;
+  const shortURL = req.params.shortURL;
   const longURL = urlDatabase[req.params.shortURL];
-  const templateVars = { shortURL: id, longURL: longURL};
+  const username = req.cookies["username"];
+  const templateVars = { shortURL: shortURL, longURL: longURL, username: username};
   res.render("urls_show", templateVars);
 });
 
@@ -81,11 +90,23 @@ app.post('/urls/:id/edit', (req, res) => {
   res.redirect(`/urls/${req.params.id}`);
 });
 
-// ADD COOKIE
+// ADD LOGIN BUTTON
 app.post('/login', (req, res) => {
-  console.log("content is: ", req.body);
+  console.log(req.body);
+  const username = req.body.username;
+  if (username) {
+    res.cookie('username', username);
+  }
+  // redirect or render ?
+  //
+  res.redirect("/urls");
 });
 
+// HANDLE LOGOUT BY RESETTING COOKIE
+app.post('/logout', (req, res) => {
+  res.clearCookie('username');
+  res.redirect('/urls');
+});
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
