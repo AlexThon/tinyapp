@@ -5,8 +5,7 @@ const PORT = 8080;
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const USERS = require('./data/users');
-const GET_USER = require('./helper/getUser');
-
+const getUserInformation = require('./helper/getUser');
 
 
 
@@ -31,10 +30,11 @@ app.get('/', (req, res) => {
 
 app.get('/urls', (req, res)=> {
   const userId = req.cookies['user_id'];
-  console.log(USERS[userId]);
+  // console.log(USERS[userId]);
   //console.log(username);
   const user = USERS[userId];
-  const templateVars = {urls: urlDatabase, user};
+
+  const templateVars = {urls: urlDatabase, user };
 
   res.render('urls_index', templateVars);
 });
@@ -44,8 +44,6 @@ app.get('/urls', (req, res)=> {
 app.get('/urls/new', (req, res) => {
   
   const userId = req.cookies['user_id'];
-  console.log(USERS[userId]);
-  //console.log(username);
   const user = USERS[userId];
   const templateVars = {user};
 
@@ -62,11 +60,14 @@ app.post("/urls", (req, res) => {
 
 // READ short and long URLS
 app.get("/urls/:shortURL", (req, res) => {
+  const userId = req.cookies['user_id'];
+  const user = USERS[userId];
+  // const templateVars = {user};
 
   const shortURL = req.params.shortURL;
   const longURL = urlDatabase[req.params.shortURL];
-  const username = req.cookies["username"];
-  const templateVars = { shortURL: shortURL, longURL: longURL, username: username};
+  // const username = req.cookies["username"];
+  const templateVars = { shortURL: shortURL, longURL: longURL, user};
   res.render("urls_show", templateVars);
 });
 
@@ -82,9 +83,8 @@ app.get('/u/:shortURL', (req, res) => {
 
 // DISPLAY FORM FOR REGISTRATION
 app.get('/register', (req, res) => {
-  
   const userId = req.cookies["user_id"];
-  console.log("users is: " , USERS);
+  console.log(USERS[userId]);
   return res.render('registration-form');
 });
 
@@ -108,6 +108,8 @@ app.get('/register', (req, res) => {
  *  password: 'dishwasher-funk'
  *}
  *}
+ * If e-mail or password are empty strings response with the 400 status code.
+ *
  *
   **/
 
@@ -115,13 +117,27 @@ app.post('/register', (req, res) => {
   const userId = Math.random().toString(36).substring(2,8);
   const email = req.body.email;
   const password = req.body.password;
+
+  const userInfo = getUserInformation(USERS);
+  const {user, error} = userInfo.checkUserEmail(email);
+  
+
+  if (!userId || !email) {
+    res.statusCode = 400;
+    return res.send("Fill in the form");
+  }
+
+  if (!error) {
+    res.statusCode = 400;
+    return res.send("Email is taken");
+  }
+  
   USERS[userId] = {
     id: userId,
     email:email,
     password: password
   };
   res.cookie('user_id', userId);
-  console.log("users: " , USERS);
   return res.redirect("/urls");
 });
 
