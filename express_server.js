@@ -32,7 +32,10 @@ app.get('/urls', (req, res)=> {
   const userId = req.cookies['user_id'];
   // console.log(USERS[userId]);
   //console.log(username);
-  const user = USERS[userId];
+  //const user = USERS[userId];
+
+  const userInfo = getUserInformation(USERS);
+  const {user, error} = userInfo.checkUserId(userId);
 
   const templateVars = {urls: urlDatabase, user };
 
@@ -44,7 +47,9 @@ app.get('/urls', (req, res)=> {
 app.get('/urls/new', (req, res) => {
   
   const userId = req.cookies['user_id'];
-  const user = USERS[userId];
+  // const user = USERS[userId];
+  const userInfo = getUserInformation(USERS);
+  const {user, error} = userInfo.checkUserId(userId);
   const templateVars = {user};
 
   res.render('urls_new', templateVars);
@@ -61,7 +66,9 @@ app.post("/urls", (req, res) => {
 // READ short and long URLS
 app.get("/urls/:shortURL", (req, res) => {
   const userId = req.cookies['user_id'];
-  const user = USERS[userId];
+  const userInfo = getUserInformation(USERS);
+  const {user, error} = userInfo.checkUserId(userId);
+  //const user = USERS[userId];
   // const templateVars = {user};
 
   const shortURL = req.params.shortURL;
@@ -83,9 +90,13 @@ app.get('/u/:shortURL', (req, res) => {
 
 // DISPLAY FORM FOR REGISTRATION
 app.get('/register', (req, res) => {
+  const userInfo = getUserInformation(USERS);
   const userId = req.cookies["user_id"];
-  console.log(USERS[userId]);
-  return res.render('registration-form');
+  const {user, error} = userInfo.checkUserId(userId);
+ 
+  const templateVars = {user};
+  
+  return res.render('registration-form', templateVars);
 });
 
 
@@ -115,8 +126,9 @@ app.get('/register', (req, res) => {
 
 app.post('/register', (req, res) => {
   const userId = Math.random().toString(36).substring(2,8);
-  const email = req.body.email;
-  const password = req.body.password;
+  const { email, password} = req.body;
+  // const email = req.body.email;
+  // const password = req.body.password;
 
   const userInfo = getUserInformation(USERS);
   const {user, error} = userInfo.checkUserEmail(email);
@@ -127,7 +139,9 @@ app.post('/register', (req, res) => {
     return res.send("Fill in the form");
   }
 
+  // check if user is found
   if (!error) {
+    console.log("Error: is", error);
     res.statusCode = 400;
     return res.send("Email is taken");
   }
@@ -167,15 +181,48 @@ app.post('/urls/:id/edit', (req, res) => {
 });
 
 // ADD LOGIN BUTTON
+// app.post('/login', (req, res) => {
+//   console.log(req.body);
+//   const username = req.body.username;
+//   if (username) {
+//     res.cookie('username', username);
+//   }
+//   // redirect or render ?
+//   //
+//   return res.redirect("/urls");
+// });
+
+// ADD LOGIN BUTTON
+
+app.get('/login', (req, res) => {
+  const userInfo = getUserInformation(USERS);
+  const userId = req.cookies['user_id'];
+  const {user, error} = userInfo.checkUserId(userId);
+  const templateVars = {user};
+  
+  res.render('login', templateVars);
+});
+
+/**
+ *  If a user with that e-mail cannot be found, return a response with a 403 status code.
+    If a user with that e-mail address is located, compare the password given in the form with the existing user's password. If it does not match, return a response with a 403 status code.
+    If both checks pass, set the user_id cookie with the matching user's random ID, then redirect to /urls.
+*/
+
 app.post('/login', (req, res) => {
-  console.log(req.body);
-  const username = req.body.username;
-  if (username) {
-    res.cookie('username', username);
+  // destructure req.body to get both email and password
+  const { email, password} = req.body;
+  const userInfo = getUserInformation(USERS);
+  const {user, error} = userInfo.authenticateUser(email, password);
+  
+  if (error) {
+    res.statusCode = 403;
+    // send user back to login form
+    return res.redirect('/login');
   }
-  // redirect or render ?
-  //
-  return res.redirect("/urls");
+  res.cookie('user_id', user.id);
+  res.redirect('/urls');
+  
 });
 
 // HANDLE LOGOUT BY RESETTING COOKIE

@@ -2,9 +2,15 @@
 
 
 /**
- * Lookup the user object in the users object using the user_id cookie value
- * Pass this user object to your templates via templateVars.
- * Update the _header partial to show the email value from the user object instead of the username.
+ * GetUserInformation: usersDb - takes user database
+ * and pass it to the enclosed functions.
+ * The inner functions are: utility() - multipurpose function for checking the database
+ * if the given id or email is in the database.
+ * It returns user object or error object
+ * checkUserEmail() - takes an email and return a user or error
+ * The user can be retrieved by either the id and the email.
+ * checkUserId() - takes user id and returns user or error
+ *
  * ***/
 
 const getUserInformation = (usersDb) => {
@@ -13,10 +19,9 @@ const getUserInformation = (usersDb) => {
     for (const id in usersDb) {
       if (usersDb[id][`${caseToTest}`] === email) {
         return {user: usersDb[id], error: null};
-        
       }
     }
-    return {user: null, error: "Email not found!"};
+    return {user: null, error: "User not found!"};
   };
 
   const checkUserEmail = (email) => {
@@ -26,8 +31,20 @@ const getUserInformation = (usersDb) => {
   const checkUserId = (userId) => {
     return utility('id', userId);
   };
-  
-  return {checkUserEmail, checkUserId};
+  // Takes email and password and return the user otherwise null
+  const authenticateUser = (email, password) => {
+    // destructure the  user object from checkUserEmail
+    const { user, error} = checkUserEmail(email);
+    if (user) {
+      if (user.password === password) {
+        return {user: user, error: null};
+      }
+    }
+    return {user: null, error: error};
+    
+  };
+
+  return {checkUserEmail, checkUserId, authenticateUser};
 };
 
 module.exports = getUserInformation;
@@ -49,11 +66,10 @@ module.exports = getUserInformation;
 
 module.exports = getUserInformation;
 
-// let email = "user1@example.com";
+// let email = "user@example.com";
 // let id = "user2RandomID";
+// let password = "dishwasher-funk";
 // const result = getUserInformation(users);
-// const {user, error} = result.checkUserEmail(email);
 
-//console.log(user.email);
+// console.log("authenticate user: ", result.authenticateUser(email, password));
 
-// console.log("result for id: ", result.checkUserId(id));
