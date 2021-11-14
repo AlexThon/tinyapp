@@ -1,9 +1,13 @@
 const express = require('express');
+const cookieSession = require("cookie-session");
 const app = express();
 const PORT = 8080;
 
 const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
+//const cookieParser = require('cookie-parser');
+
+const bcrypt = require('bcryptjs');
+
 const USERS = require('./data/users');
 const getUserInformation = require('./helper/getUser');
 
@@ -11,7 +15,11 @@ const getUserInformation = require('./helper/getUser');
 
 
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(cookieParser());
+
+app.use(cookieSession({
+  name: 'session',
+  keys: ['let\'s see if I can implement session=cookie correctly', 'key2'],
+}));
 
 app.set('view engine', 'ejs');
 
@@ -28,12 +36,13 @@ const urlDatabase = {
 };
 
 app.get('/', (req, res) => {
-  res.send('Hello!');
+  res.redirect('/register');
 });
 
 
 app.get('/urls', (req, res)=> {
-  const userId = req.cookies['user_id'];
+  //const userId = req.cookies['user_id'];
+  const userId = req.session['user_id'];
  
   const userInfo = getUserInformation(USERS);
   const {user, error} = userInfo.checkUserId(userId);
@@ -56,7 +65,8 @@ app.get('/urls', (req, res)=> {
 // Display a empty form to the client
 app.get('/urls/new', (req, res) => {
   
-  const userId = req.cookies['user_id'];
+  //const userId = req.cookies['user_id'];
+  const userId = req.session['user_id'];
   
   const userInfo = getUserInformation(USERS);
   const {user, error} = userInfo.checkUserId(userId);
@@ -80,7 +90,8 @@ app.post("/urls", (req, res) => {
 
 // READ short and long URLS
 app.get("/urls/:shortURL", (req, res) => {
-  const userId = req.cookies['user_id'];
+  //const userId = req.cookies['user_id'];
+  const userId = req.session['user_id'];
   const userInfo = getUserInformation(USERS);
   const {user, error} = userInfo.checkUserId(userId);
 
@@ -114,7 +125,8 @@ app.get('/u/:shortURL', (req, res) => {
 // DISPLAY FORM FOR REGISTRATION
 app.get('/register', (req, res) => {
   const userInfo = getUserInformation(USERS);
-  const userId = req.cookies["user_id"];
+  //const userId = req.cookies["user_id"];
+  const userId = req.session['user_id'];
   const {user, error} = userInfo.checkUserId(userId);
  
   const templateVars = {user};
@@ -149,6 +161,7 @@ app.get('/register', (req, res) => {
 app.post('/register', (req, res) => {
   const userId = Math.random().toString(36).substring(2,8);
   const { email, password} = req.body;
+  const hashedPassword = bcrypt.hashSync(password, 10);
   
   const userInfo = getUserInformation(USERS);
   const {user, error} = userInfo.checkUserEmail(email);
@@ -168,10 +181,11 @@ app.post('/register', (req, res) => {
   USERS[userId] = {
     id: userId,
     email:email,
-    password: password
+    hashedPassword: hashedPassword
   };
   // set cookies
-  res.cookie('user_id', userId);
+  //res.cookie('user_id', userId);
+  req.session.user_id = userId;
   return res.redirect("/urls");
 });
 
@@ -202,7 +216,9 @@ app.post('/urls/:id/edit', (req, res) => {
 
 app.get('/login', (req, res) => {
   const userInfo = getUserInformation(USERS);
-  const userId = req.cookies['user_id'];
+  //const userId = req.cookies['user_id'];
+  const userId = req.session.user_id;
+
   const {user, error} = userInfo.checkUserId(userId);
   const templateVars = {user};
   
@@ -217,25 +233,41 @@ app.get('/login', (req, res) => {
 
 app.post('/login', (req, res) => {
   // destructure req.body to get both email and password
-  const { email, password} = req.body;
-  const userInfo = getUserInformation(USERS);
-  const {user, error} = userInfo.authenticateUser(email, password);
-  
-  if (error) {
-    res.statusCode = 403;
-    // send user back to login form
-    return res.redirect('/login');
+  try {
+
+    const { email, password} = req.body;
+    const userInfo = getUserInformation(USERS);
+    const {user, error} = userInfo.checkUserEmail(email);
+    if (error) {
+      res.statusCode = 403;
+      // prompt for wrong email or password
+      res.send('Email or password is not correct');
+      
+    }
+    if (bcrypt.compareSync(password, user.hashedPassword)) {
+      //res.cookie('user_id', user.id);
+      req.session.user_id = user.id;
+      res.redirect('/urls');
+    } else {
+      // REMINDER: Need to add a template page to handle the error
+      res.send('wrong password !');
+    }
+  } catch (error) {
+    res.statusCode = 500;
+    // REMINDER: Need to add a template page to handle the error
+    res.send("Error in getting the user");
   }
-  res.cookie('user_id', user.id);
-  res.redirect('/urls');
+  
   
 });
 
 
 // HANDLE LOGOUT BY RESETTING COOKIE
 app.post('/logout', (req, res) => {
-  res.clearCookie('user_id');
-  res.redirect('/login');
+  // res.clearCookie('user_id');
+  delete req.session.user_id;
+  
+  return res.redirect('/');
 });
 
 app.listen(PORT, () => {
