@@ -16,13 +16,6 @@ app.use(cookieParser());
 app.set('view engine', 'ejs');
 
 
-
-// const urlDatabase = {
-//   "9sm5xK": "http://www.google.com",
-//   "b2Vxn2": "http://www.github.com",
-//   "8sm5xK": "http://www.lighthouselabs.ca"
-// };
-
 const urlDatabase = {
   b6UTxQ: {
     longURL: "https://www.tsn.ca",
@@ -50,6 +43,12 @@ app.get('/urls', (req, res)=> {
 });
 
 
+/** If someone is not logged in when trying to access /urls/new
+ * redirect them to the login page
+ *
+*/
+
+
 // Display a empty form to the client
 app.get('/urls/new', (req, res) => {
   
@@ -57,6 +56,10 @@ app.get('/urls/new', (req, res) => {
   
   const userInfo = getUserInformation(USERS);
   const {user, error} = userInfo.checkUserId(userId);
+  if (error) {
+    return res.redirect('/login');
+  }
+
   const templateVars = {user};
 
   res.render('urls_new', templateVars);
@@ -182,19 +185,6 @@ app.post('/urls/:id/edit', (req, res) => {
   res.redirect(`/urls/${req.params.id}`);
 });
 
-// ADD LOGIN BUTTON
-// app.post('/login', (req, res) => {
-//   console.log(req.body);
-//   const username = req.body.username;
-//   if (username) {
-//     res.cookie('username', username);
-//   }
-//   // redirect or render ?
-//   //
-//   return res.redirect("/urls");
-// });
-
-// ADD LOGIN BUTTON
 
 app.get('/login', (req, res) => {
   const userInfo = getUserInformation(USERS);
@@ -227,10 +217,11 @@ app.post('/login', (req, res) => {
   
 });
 
+
 // HANDLE LOGOUT BY RESETTING COOKIE
 app.post('/logout', (req, res) => {
   res.clearCookie('user_id');
-  res.redirect('/urls');
+  res.redirect('/login');
 });
 
 app.listen(PORT, () => {
