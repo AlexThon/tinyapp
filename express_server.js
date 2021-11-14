@@ -90,8 +90,12 @@ app.get("/urls/:shortURL", (req, res) => {
 // READ/DISPLAY LONG URL
 app.get('/u/:shortURL', (req, res) => {
   const shortURL = req.params.shortURL;
-  const longURL = urlDatabase[shortURL].longURL;
-  res.redirect(longURL);
+  try {
+    const longURL = urlDatabase[shortURL].longURL;
+    res.redirect(longURL);
+  } catch (error) {
+    res.send("Invalid URL!!");
+  }
 
 });
 
