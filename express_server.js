@@ -38,6 +38,10 @@ app.get('/urls', (req, res)=> {
   const userInfo = getUserInformation(USERS);
   const {user, error} = userInfo.checkUserId(userId);
   const templateVars = {urls: urlDatabase, user };
+  if (error) {
+    // need to add prompt page for non logged in users
+    return res.redirect('/register');
+  }
 
   res.render('urls_index', templateVars);
 });
@@ -57,6 +61,7 @@ app.get('/urls/new', (req, res) => {
   const userInfo = getUserInformation(USERS);
   const {user, error} = userInfo.checkUserId(userId);
   if (error) {
+    // need to add prompt page
     return res.redirect('/login');
   }
 
@@ -78,6 +83,10 @@ app.get("/urls/:shortURL", (req, res) => {
   const userId = req.cookies['user_id'];
   const userInfo = getUserInformation(USERS);
   const {user, error} = userInfo.checkUserId(userId);
+
+  if (error) {
+    res.send("Edit not allowed");
+  }
   
   const shortURL = req.params.shortURL;
   const longURL = urlDatabase[shortURL];
@@ -94,7 +103,8 @@ app.get('/u/:shortURL', (req, res) => {
     const longURL = urlDatabase[shortURL].longURL;
     res.redirect(longURL);
   } catch (error) {
-    res.send("Invalid URL!!");
+    // Need to add error page
+    res.render('invalidID');
   }
 
 });
@@ -146,15 +156,13 @@ app.post('/register', (req, res) => {
   if (!userId || !email) {
     res.statusCode = 400;
     // need to add a page that handles this edge case
-    return res.send("Fill in the form");
+    res.render('fillForm');
   }
-
   // check if user is found
   if (!error) {
-    console.log("Error: is", error);
     res.statusCode = 400;
     // need to add a page that handles this
-    return res.send("Email is taken");
+    res.render('invalidEmail');
   }
   
   USERS[userId] = {
