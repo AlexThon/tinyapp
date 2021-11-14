@@ -17,10 +17,21 @@ app.set('view engine', 'ejs');
 
 
 
+// const urlDatabase = {
+//   "9sm5xK": "http://www.google.com",
+//   "b2Vxn2": "http://www.github.com",
+//   "8sm5xK": "http://www.lighthouselabs.ca"
+// };
+
 const urlDatabase = {
-  "9sm5xK": "http://www.google.com",
-  "b2Vxn2": "http://www.github.com",
-  "8sm5xK": "http://www.lighthouselabs.ca"
+  b6UTxQ: {
+    longURL: "https://www.tsn.ca",
+    userID: "aJ48lW"
+  },
+  i3BoGr: {
+    longURL: "https://www.google.ca",
+    userID: "aJ48lW"
+  }
 };
 
 app.get('/', (req, res) => {
@@ -30,13 +41,9 @@ app.get('/', (req, res) => {
 
 app.get('/urls', (req, res)=> {
   const userId = req.cookies['user_id'];
-  // console.log(USERS[userId]);
-  //console.log(username);
-  //const user = USERS[userId];
-
+ 
   const userInfo = getUserInformation(USERS);
   const {user, error} = userInfo.checkUserId(userId);
-
   const templateVars = {urls: urlDatabase, user };
 
   res.render('urls_index', templateVars);
@@ -47,7 +54,7 @@ app.get('/urls', (req, res)=> {
 app.get('/urls/new', (req, res) => {
   
   const userId = req.cookies['user_id'];
-  // const user = USERS[userId];
+  
   const userInfo = getUserInformation(USERS);
   const {user, error} = userInfo.checkUserId(userId);
   const templateVars = {user};
@@ -58,7 +65,7 @@ app.get('/urls/new', (req, res) => {
 // CREATE AND ADD URL TO DB
 app.post("/urls", (req, res) => {
   const urlId = Math.random().toString(36).substring(2,8);
-  urlDatabase[urlId] = req.body.longURL;
+  urlDatabase[urlId] = {longURL: req.body.longURL, userID: Math.random().toString(36).substring(2,8) };
   console.log(urlDatabase);
   res.redirect('/urls');
 });
@@ -68,20 +75,19 @@ app.get("/urls/:shortURL", (req, res) => {
   const userId = req.cookies['user_id'];
   const userInfo = getUserInformation(USERS);
   const {user, error} = userInfo.checkUserId(userId);
-  //const user = USERS[userId];
-  // const templateVars = {user};
-
+  
   const shortURL = req.params.shortURL;
-  const longURL = urlDatabase[req.params.shortURL];
-  // const username = req.cookies["username"];
+  const longURL = urlDatabase[shortURL];
+
   const templateVars = { shortURL: shortURL, longURL: longURL, user};
+  
   res.render("urls_show", templateVars);
 });
 
 // READ/DISPLAY LONG URL
 app.get('/u/:shortURL', (req, res) => {
   const shortURL = req.params.shortURL;
-  const longURL = urlDatabase[shortURL];
+  const longURL = urlDatabase[shortURL].longURL;
   res.redirect(longURL);
 
 });
@@ -95,7 +101,6 @@ app.get('/register', (req, res) => {
   const {user, error} = userInfo.checkUserId(userId);
  
   const templateVars = {user};
-  
   return res.render('registration-form', templateVars);
 });
 
@@ -127,13 +132,10 @@ app.get('/register', (req, res) => {
 app.post('/register', (req, res) => {
   const userId = Math.random().toString(36).substring(2,8);
   const { email, password} = req.body;
-  // const email = req.body.email;
-  // const password = req.body.password;
-
+  
   const userInfo = getUserInformation(USERS);
   const {user, error} = userInfo.checkUserEmail(email);
   
-
   if (!userId || !email) {
     res.statusCode = 400;
     return res.send("Fill in the form");
@@ -151,6 +153,7 @@ app.post('/register', (req, res) => {
     email:email,
     password: password
   };
+  // set cookies
   res.cookie('user_id', userId);
   return res.redirect("/urls");
 });
@@ -161,8 +164,7 @@ app.post('/register', (req, res) => {
 app.post('/urls/:id', (req, res) => {
   const  shortURL = req.params.id;
   const content = req.body;
-  urlDatabase[shortURL] = content.longURL;
-  
+  urlDatabase[shortURL] = {longURL: content.longURL, id: Math.random().toString(36).substring(2,8)};
   res.redirect('/urls');
   
 });
