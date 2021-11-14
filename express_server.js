@@ -141,6 +141,7 @@ app.post('/register', (req, res) => {
   
   if (!userId || !email) {
     res.statusCode = 400;
+    // need to add a page that handles this edge case
     return res.send("Fill in the form");
   }
 
@@ -148,6 +149,7 @@ app.post('/register', (req, res) => {
   if (!error) {
     console.log("Error: is", error);
     res.statusCode = 400;
+    // need to add a page that handles this
     return res.send("Email is taken");
   }
   
