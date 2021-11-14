@@ -50,26 +50,5 @@ const getUserInformation = (usersDb) => {
 module.exports = getUserInformation;
 
 
-// const users = {
-//   "userRandomID": {
-//     id: "userRandomID",
-//     email: "user@example.com",
-//     password: "purple-monkey-dinosaur"
-//   },
-//   "user2RandomID": {
-//     id: "user2RandomID",
-//     email: "user2@example.com",
-//     password: "dishwasher-funk"
-//   }
-// };
 
-
-module.exports = getUserInformation;
-
-// let email = "user@example.com";
-// let id = "user2RandomID";
-// let password = "dishwasher-funk";
-// const result = getUserInformation(users);
-
-// console.log("authenticate user: ", result.authenticateUser(email, password));
 
