@@ -4,7 +4,7 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 ## Final Product
 
-![Registration screen](../doc/createAccount.png)
+![Registration screen](https://github.com/AlexThon/tinyapp/blob/master/doc/createAccount.png)
 This page is presented when the user do not have any account
 
 !["screenshot description"](#2)
