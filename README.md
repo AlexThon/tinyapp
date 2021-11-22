@@ -21,6 +21,7 @@ urls created by the logged in user
 - bcrypt
 - body-parser
 - cookie-session
+- npm
 
 ## Getting Started
 
