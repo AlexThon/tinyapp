@@ -4,9 +4,10 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 ## Final Product
 
-
+This picture shows the urls created by the user
 !["This page is presented when the user do not have any account"](https://github.com/AlexThon/tinyapp/blob/master/doc/createAccount.png)
 
+This page is presented when the user do not have any account
 !["This picture shows the urls created by the user"](https://github.com/AlexThon/tinyapp/blob/master/doc/urls.png)
 urls created by the logged in user
 
