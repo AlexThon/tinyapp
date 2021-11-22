@@ -8,7 +8,7 @@ TinyApp is a full stack web application built with Node and Express that allows 
 !["This page is shown when you visit a site"](https://github.com/AlexThon/tinyapp/blob/master/doc/createAccount.png)
 This page is presented when the user do not have any account
 
-!["This picture shows the urls created by the user"](#2)
+!["This picture shows the urls created by the user"](https://github.com/AlexThon/tinyapp/blob/master/doc/urls.png)
 urls created by the logged in user
 
 ## Dependencies
