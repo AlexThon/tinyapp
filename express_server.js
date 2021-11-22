@@ -4,7 +4,6 @@ const app = express();
 const PORT = 8080;
 
 const bodyParser = require('body-parser');
-//const cookieParser = require('cookie-parser');
 
 const bcrypt = require('bcryptjs');
 
