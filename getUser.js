@@ -44,7 +44,9 @@ const getUserInformation = (usersDb) => {
     
   };
 
-  return {checkUserEmail, checkUserId, authenticateUser};
+  const urlId = () => Math.random().toString(36).substring(2,8);
+
+  return {checkUserEmail, checkUserId, authenticateUser, urlId};
 };
 
 module.exports = getUserInformation;

@@ -8,10 +8,7 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs');
 
 const USERS = require('./data/users');
-const getUserInformation = require('./helper/getUser');
-
-
-
+const getUserInformation = require('./getUser');
 
 app.use(bodyParser.urlencoded({extended: true}));
 
@@ -22,7 +19,7 @@ app.use(cookieSession({
 
 app.set('view engine', 'ejs');
 
-
+// SHORT URLS OBJECT
 const urlDatabase = {
   b6UTxQ: {
     longURL: "https://www.tsn.ca",
@@ -34,62 +31,64 @@ const urlDatabase = {
   }
 };
 
+
+// ROUTES
+
 app.get('/', (req, res) => {
   res.redirect('/register');
 });
 
 
 app.get('/urls', (req, res)=> {
-  //const userId = req.cookies['user_id'];
   const userId = req.session['user_id'];
- 
   const userInfo = getUserInformation(USERS);
+
   const {user, error} = userInfo.checkUserId(userId);
   const templateVars = {urls: urlDatabase, user };
+
   if (error) {
     // need to add prompt page for non logged in users
     return res.redirect('/register');
   }
-
   res.render('urls_index', templateVars);
 });
 
 
-/** If someone is not logged in when trying to access /urls/new
- * redirect them to the login page
- *
-*/
-
-
-// Display a empty form to the client
-app.get('/urls/new', (req, res) => {
-  
-  //const userId = req.cookies['user_id'];
-  const userId = req.session['user_id'];
-  
-  const userInfo = getUserInformation(USERS);
-  const {user, error} = userInfo.checkUserId(userId);
-  if (error) {
-    // need to add prompt page
-    return res.redirect('/login');
-  }
-
-  const templateVars = {user};
-
-  res.render('urls_new', templateVars);
-});
-
 // CREATE AND ADD URL TO DB
 app.post("/urls", (req, res) => {
-  const urlId = Math.random().toString(36).substring(2,8);
+  // Generates unique short url
+  const userInfo = getUserInformation(USERS);
+  const urlId = userInfo.urlId();
   urlDatabase[urlId] = {longURL: req.body.longURL, userID: Math.random().toString(36).substring(2,8) };
   console.log(urlDatabase);
   res.redirect('/urls');
 });
 
-// READ short and long URLS
+
+/**
+ * This route redirects users to the login page
+ * when they try to access /urls/new while not login
+ *
+*/
+
+// PRESENTS AN EMPTY FORM TO THE CLIENT
+app.get('/urls/new', (req, res) => {
+  const userId = req.session['user_id'];
+  const userInfo = getUserInformation(USERS);
+  const {user, error} = userInfo.checkUserId(userId);
+  
+  // return login page if the user Id is not in the db or cookie
+  if (error) {
+    return res.redirect('/login');
+  }
+  const templateVars = {user};
+  //only gets here when the user is login
+  res.render('urls_new', templateVars);
+});
+
+
+// READ SHORT AND LONG URLS
 app.get("/urls/:shortURL", (req, res) => {
-  //const userId = req.cookies['user_id'];
   const userId = req.session['user_id'];
   const userInfo = getUserInformation(USERS);
   const {user, error} = userInfo.checkUserId(userId);
@@ -98,6 +97,7 @@ app.get("/urls/:shortURL", (req, res) => {
     res.send("Edit not allowed");
   }
   
+  // retrieve the urls and use it to get long url
   const shortURL = req.params.shortURL;
   const longURL = urlDatabase[shortURL];
 
@@ -113,21 +113,17 @@ app.get('/u/:shortURL', (req, res) => {
     const longURL = urlDatabase[shortURL].longURL;
     res.redirect(longURL);
   } catch (error) {
-    // Need to add error page
     res.render('invalidID');
   }
 
 });
 
 
-
 // DISPLAY FORM FOR REGISTRATION
 app.get('/register', (req, res) => {
   const userInfo = getUserInformation(USERS);
-  //const userId = req.cookies["user_id"];
   const userId = req.session['user_id'];
   const {user, error} = userInfo.checkUserId(userId);
- 
   const templateVars = {user};
   return res.render('registration-form', templateVars);
 });
@@ -167,13 +163,12 @@ app.post('/register', (req, res) => {
   
   if (!userId || !email) {
     res.statusCode = 400;
-    // need to add a page that handles this edge case
     res.render('fillForm');
   }
   // check if user is found
   if (!error) {
     res.statusCode = 400;
-    // need to add a page that handles this
+    // custom html error display
     res.render('invalidEmail');
   }
   
@@ -182,8 +177,7 @@ app.post('/register', (req, res) => {
     email:email,
     hashedPassword: hashedPassword
   };
-  // set cookies
-  //res.cookie('user_id', userId);
+  // set session coookies
   req.session.user_id = userId;
   return res.redirect("/urls");
 });
@@ -207,7 +201,7 @@ app.post('/urls/:shortURL/delete', (req, res) => {
   return res.redirect('/urls');
 });
 
-// handle EDIT BUTTON
+// HANDLES EDIT BUTTON
 app.post('/urls/:id/edit', (req, res) => {
   res.redirect(`/urls/${req.params.id}`);
 });
@@ -215,7 +209,6 @@ app.post('/urls/:id/edit', (req, res) => {
 
 app.get('/login', (req, res) => {
   const userInfo = getUserInformation(USERS);
-  //const userId = req.cookies['user_id'];
   const userId = req.session.user_id;
 
   const {user, error} = userInfo.checkUserId(userId);
@@ -231,42 +224,34 @@ app.get('/login', (req, res) => {
 */
 
 app.post('/login', (req, res) => {
-  // destructure req.body to get both email and password
   try {
-
     const { email, password} = req.body;
     const userInfo = getUserInformation(USERS);
     const {user, error} = userInfo.checkUserEmail(email);
     if (error) {
       res.statusCode = 403;
-      // prompt for wrong email or password
       res.send('Email or password is not correct');
       
     }
     if (bcrypt.compareSync(password, user.hashedPassword)) {
-      //res.cookie('user_id', user.id);
       req.session.user_id = user.id;
       res.redirect('/urls');
     } else {
-      // REMINDER: Need to add a template page to handle the error
       res.send('wrong password !');
     }
   } catch (error) {
     res.statusCode = 500;
-    // REMINDER: Need to add a template page to handle the error
     res.send("Error in getting the user");
   }
-  
-  
+
 });
 
 
 // HANDLE LOGOUT BY RESETTING COOKIE
 app.post('/logout', (req, res) => {
-  // res.clearCookie('user_id');
+  // clear session cookie
   delete req.session.user_id;
-  
-  return res.redirect('/');
+  return res.redirect('/register');
 });
 
 app.listen(PORT, () => {
