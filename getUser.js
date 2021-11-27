@@ -1,17 +1,5 @@
 
-
-
-/**
- * GetUserInformation: usersDb - takes user database
- * and pass it to the enclosed functions.
- * The inner functions are: utility() - multipurpose function for checking the database
- * if the given id or email is in the database.
- * It returns user object or error object
- * checkUserEmail() - takes an email and return a user or error
- * The user can be retrieved by either the id and the email.
- * checkUserId() - takes user id and returns user or error
- *
- * ***/
+// enclosed object with helper functions
 
 const getUserInformation = (usersDb) => {
 
@@ -43,10 +31,7 @@ const getUserInformation = (usersDb) => {
     return {user: null, error: error};
     
   };
-
-  const urlId = () => Math.random().toString(36).substring(2,8);
-
-  return {checkUserEmail, checkUserId, authenticateUser, urlId};
+  return {checkUserEmail, checkUserId, authenticateUser};
 };
 
 module.exports = getUserInformation;
