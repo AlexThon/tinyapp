@@ -1,40 +1,29 @@
 
-// enclosed object with helper functions
+// helper functions enclosure
 
-const getUserInformation = (usersDb) => {
+const getUsersInformation = (usersDb) => {
 
-  const utility = (caseToTest, email) => {
+  const searchUtility = (property, value) => {
     for (const id in usersDb) {
-      if (usersDb[id][`${caseToTest}`] === email) {
-        return {user: usersDb[id], error: null};
+      if (usersDb[id][`${property}`] === value) {
+        return usersDb[id];
       }
     }
-    return {user: null, error: "User not found!"};
+    return null
   };
 
   const checkUserEmail = (email) => {
-    return utility('email', email);
+    return searchUtility('email', email);
   };
 
   const checkUserId = (userId) => {
-    return utility('id', userId);
+    return searchUtility('id', userId);
   };
-  // Takes email and password and return the user otherwise null
-  const authenticateUser = (email, password) => {
-    // destructure the  user object from checkUserEmail
-    const { user, error} = checkUserEmail(email);
-    if (user) {
-      if (user.password === password) {
-        return {user: user, error: null};
-      }
-    }
-    return {user: null, error: error};
-    
-  };
-  return {checkUserEmail, checkUserId, authenticateUser};
+  
+  return {checkUserEmail, checkUserId};
 };
 
-module.exports = getUserInformation;
+module.exports = getUsersInformation;
 
 
 
