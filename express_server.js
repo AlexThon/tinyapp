@@ -208,7 +208,9 @@ app.post('/register', (req, res) => {
   const userId = generateRandomString();
 
   const { email, password} = req.body;
+
   const hashedPassword = bcrypt.hashSync(password, 10);
+
   
   //gets user object
   
@@ -217,7 +219,7 @@ app.post('/register', (req, res) => {
   // User must add email and password to register
   if (!password || !email) {
   
-    res.satus(400).send("All inputs are required.");
+    res.status(400).send("All inputs are required.");
   }
   // email is already in the database
   if (!user) {
@@ -228,7 +230,7 @@ app.post('/register', (req, res) => {
   USERS[userId] = {
     id: userId,
     email:email,
-    hashedPassword: hashedPassword
+    password: hashedPassword
   };
   // set session coookies
   req.session.user_id = userId;
@@ -246,7 +248,9 @@ app.post('/register', (req, res) => {
 
 app.post('/login', (req, res) => {
   const {email, password} = req.body;
-  const user = checkUserEmail(email);
+ 
+  const user = checkUserEmail(email)
+  console.log("user:: ", user)
 
   if(!email) {
     return res.status(400).send('Add correct email');
