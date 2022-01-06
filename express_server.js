@@ -5,30 +5,13 @@ const cookieSession = require("cookie-session");
 const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs');
 
-const getUsersInformation = require('./getUser');
-
 const generateRandomString = () => Math.random().toString(36).substring(2,8);
+const getUsersInformation = require("./getUser")
 
-const urlsForUserID = (id) => {
-  const userUrls = {};
- 
-  for (let shortURL in urlDatabase) {
-    let userId = urlDatabase[shortURL].userID;
-    if (id === userId) {
-      userUrls[shortURL] = urlDatabase[shortURL];
-    }
-  }
-  return userUrls;
-};
-
+const {urlsForUserID, urlDatabase} = require('./data/db')
 const USERS = require('./data/users') ;
 const {checkUserEmail, checkUserId} = getUsersInformation(USERS);
 
-// SHORT URLS OBJECT DATABASE
-const urlDatabase = {
-  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
-  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW"}
-};
 
 // --------------------------------------SERVER SETTINGS/ MIDDLEWARE
 
