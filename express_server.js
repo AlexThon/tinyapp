@@ -46,7 +46,7 @@ app.get('/urls', (req, res)=> {
   
   const userId = req.session['user_id'];
   if(!userId) {
-    return res.redirect('/login')
+    return res.send('<h2> you need to login first to see your urls</h2>')
   }
 
   const validUser = checkUserId(userId);
