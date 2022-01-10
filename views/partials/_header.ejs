@@ -14,12 +14,14 @@
         </div>
       </div>
       <% if(user) {%>
-        <div style="margin-right: .5em;color: gainsboro;"> Logged in as <%= user.email %>!</div>
+        <div style="margin-right: .5em;color: gainsboro; "> Logged in as <%= user.email %>!</div>
         <form method="POST" action="/logout">
           <button style ="background: green; color: white;border-style: solid; border-radius: 10px;" class="">logout</button>
-          </form>
+        </form>
       <% }  else {%> 
       <form method="POST" action="/login">
+        <a class="nav-item nav-link" style=" display: flex; margin-left: auto;" href="/register">Register</a>
+        <a class="nav-item nav-link" style=" display: flex; margin-left: 2em; margin-right: 0;" href="/login">Login</a>
       </form>
     <% } %>
     </nav>

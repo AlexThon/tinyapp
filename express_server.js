@@ -46,13 +46,13 @@ app.get('/urls', (req, res)=> {
   
   const userId = req.session['user_id'];
   if(!userId) {
-    return res.redirect('/login')
+    return res.send('<h2> you need to login first to see your urls</h2>')
   }
 
   const validUser = checkUserId(userId);
-  if (!validUser) {
-    return res.redirect('/login')
-  }
+  // if (!validUser) {
+  //   return res.render("login")
+  // }
 
   const templateVars = {
     urls: urlsForUserID(userId),
@@ -144,7 +144,7 @@ app.post("/urls", (req, res) => {
   
   const userId = req.session['user_id'];
   if(!userId) {
-    return res.status(400).send("You need to be login")
+    return res.status(400).send("<h2>You are not logged-in<h2>")
   }
 
   const validUser = checkUserId(userId);
@@ -163,7 +163,7 @@ app.post("/urls", (req, res) => {
     userID: validUser.id
   };
 
-  return res.status(201).send("url created");
+  return res.status(201).redirect(`/urls/${shortURL}`);
 });
 
 // app.post('urls:shortURL')
@@ -185,7 +185,8 @@ app.post('/urls/:shortURL', (req, res) => {
   }
 
   urlDatabase[shortURL].longURL = req.body.longURL;
-  res.redirect(`/urls/${shortURL}`);
+  //res.redirect(`/urls/${shortURL}`);
+  res.redirect('/urls')
 });
 
 // DELETE URL
@@ -219,11 +220,11 @@ app.post('/register', (req, res) => {
   // User must add email and password to register
   if (!password || !email) {
   
-    res.status(400).send("All inputs are required.");
+    res.status(400).send("<h2>All inputs are required.<h2>");
   }
   // email is already in the database
-  if (!user) {
-    res.send('Your email is registered!...<a href="/login">login here</a>');
+  if (user) {
+    res.redirect('/urls');
   }
   
   // register new user
@@ -250,14 +251,14 @@ app.post('/login', (req, res) => {
   const {email, password} = req.body;
  
   const user = checkUserEmail(email)
-  console.log("user:: ", user)
+  
 
   if(!email) {
-    return res.status(400).send('Add correct email');
+    return res.status(400).send('<h2>Add correct email</h2>');
   }
 
   if(!password) {
-    return res.status(400).send('Password is required!');
+    return res.status(400).send('<h2>Password is required!</h2>');
   }
   
   if (bcrypt.compareSync(password, user.password)){
