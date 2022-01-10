@@ -185,7 +185,8 @@ app.post('/urls/:shortURL', (req, res) => {
   }
 
   urlDatabase[shortURL].longURL = req.body.longURL;
-  res.redirect(`/urls/${shortURL}`);
+  //res.redirect(`/urls/${shortURL}`);
+  res.redirect('/urls')
 });
 
 // DELETE URL
