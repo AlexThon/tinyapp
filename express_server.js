@@ -220,11 +220,11 @@ app.post('/register', (req, res) => {
   // User must add email and password to register
   if (!password || !email) {
   
-    res.status(400).send("All inputs are required.");
+    res.status(400).send("<h2>All inputs are required.<h2>");
   }
   // email is already in the database
-  if (!user) {
-    res.send('Your email is registered!...<a href="/login">login here</a>');
+  if (user) {
+    res.redirect('/urls');
   }
   
   // register new user
@@ -251,14 +251,14 @@ app.post('/login', (req, res) => {
   const {email, password} = req.body;
  
   const user = checkUserEmail(email)
-  console.log("user:: ", user)
+  
 
   if(!email) {
-    return res.status(400).send('Add correct email');
+    return res.status(400).send('<h2>Add correct email</h2>');
   }
 
   if(!password) {
-    return res.status(400).send('Password is required!');
+    return res.status(400).send('<h2>Password is required!</h2>');
   }
   
   if (bcrypt.compareSync(password, user.password)){
