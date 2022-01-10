@@ -163,7 +163,7 @@ app.post("/urls", (req, res) => {
     userID: validUser.id
   };
 
-  return res.status(201).send("url created");
+  return res.status(201).redirect(`/urls/${shortURL}`);
 });
 
 // app.post('urls:shortURL')
