@@ -136,6 +136,7 @@ app.get('/login', (req, res) => {
   if(userId) {
     return res.redirect('/urls')
   }
+
   const templateVars = {user: null};
   return res.render('login', templateVars);
 });
@@ -147,6 +148,7 @@ app.get('/login', (req, res) => {
 app.post("/urls", (req, res) => {
   
   const userId = req.session['user_id'];
+
   if(!userId) {
     return res.status(400).send("<h2>You are not logged-in<h2>")
   }
