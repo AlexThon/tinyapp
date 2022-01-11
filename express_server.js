@@ -133,10 +133,9 @@ app.get('/register', (req, res) => {
 
 app.get('/login', (req, res) => {  
   const userId = req.session['user_id'];
-  // if(userId) {
-  //   return res.redirect('/urls')
-  // }
-
+  if(userId) {
+    return res.redirect('/urls')
+  }
   const templateVars = {user: null};
   return res.render('login', templateVars);
 });
