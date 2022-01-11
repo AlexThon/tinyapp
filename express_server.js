@@ -243,27 +243,15 @@ app.post('/register', (req, res) => {
   return res.redirect("/urls");
 });
 
-
-
-/**
-* If a user with the e-mail provided cannot be found, it returns a response with a 403 status code.
-* If a user with that e-mail address is located, the password given in the form with the existing user's password is compared.
-* If it does not match, a response with a 403 status code is send.
-* If both checks pass, the user_id cookie is set with the matching user's random ID, then redirects to /urls.
-*/
-
 app.post('/login', (req, res) => {
   const {email, password} = req.body;
- 
-  const user = getUserByUserEmail(email)
-  console.log("user::", user)
-
+  const user = getUserByUserEmail(email);
+  
   if (!user || !bcrypt.compareSync(password, user.password)) {
-    return res.status(403).send("Wrong Email, Please Enter again.");
+    return res.status(403).send("Wrong Password, your password again.");
   }
   req.session.user_id = user.id;
   return res.redirect('/urls');
-  //return res.redirect('/login');
 });
 
 
