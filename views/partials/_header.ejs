@@ -8,9 +8,6 @@
         <div class="navbar-nav" style="display: flex; width: 90%;">
           <a class="nav-item nav-link" href="/urls">My URLs</a>
           <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
-          <a class="nav-item nav-link" style=" display: flex; margin-left: auto;" href="/register">Register</a>
-          <a class="nav-item nav-link" style=" display: flex; margin-left: 2em; margin-right: 0;" href="/login">Login</a>
-          
         </div>
       </div>
       <% if(user) {%>
@@ -19,10 +16,10 @@
           <button style ="background: green; color: white;border-style: solid; border-radius: 10px;" class="">logout</button>
         </form>
       <% }  else {%> 
-      <form method="POST" action="/login">
-        <a class="nav-item nav-link" style=" display: flex; margin-left: auto;" href="/register">Register</a>
-        <a class="nav-item nav-link" style=" display: flex; margin-left: 2em; margin-right: 0;" href="/login">Login</a>
-      </form>
+      <div class="collapse navbar-collapse" style="width: 100%;">
+        <a class="nav-item nav-link" style=" display: flex; margin-left: auto; color: gainsboro" href="/register">Register</a>
+        <a class="nav-item nav-link" style=" display: flex; margin-left: 2em; margin-right: 0; color: gainsboro" href="/login">Login</a>
+      </div>
     <% } %>
     </nav>
   </header>
