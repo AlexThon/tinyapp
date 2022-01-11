@@ -97,7 +97,7 @@ app.get("/urls/:shortURL", (req, res) => {
   if(userId && urlDatabase[shortURL].userID !== userId) {
     return res.send("<h3>Nice try! But you don't own this url.</h3>")
   }
-
+  
   const templateVars = {
     user: USERS[userId],
     shortURL: shortURL,
@@ -176,22 +176,21 @@ app.post("/urls", (req, res) => {
 // HANDLES EDIT BUTTON
 app.post('/urls/:shortURL', (req, res) => {
   const userId = req.session['user_id'];
-  if(!userId) {
-    return res.status(400).send("You need to be login to edit urls")
-  }
-
-  const validUser = getUserById(userId);
-  if (!validUser) {
-    return res.status(400).send("You are not a valid user");
-  }
-
   const  { shortURL } = req.params;
+
+  if(!userId) {
+    return res.status(400).send("<h3>You need to be logged-in to update your urls. </h3>")
+  }
+
+  if(userId && urlDatabase[shortURL].userID !== userId) {
+    return res.send("<h3>Nice try! But you don't own this url.</h3>")
+  }
+
   if (!shortURL && !urlDatabase[shortURL]) {
     return res.status(400).send("shortURL is not valid");
   }
 
-  urlDatabase[shortURL].longURL = req.body.longURL;
-  //res.redirect(`/urls/${shortURL}`);
+  urlDatabase.setLongUrl(shortURL, req.body.longURL)
   res.redirect('/urls')
 });
 
@@ -258,19 +257,6 @@ app.post('/login', (req, res) => {
  
   const user = getUserByUserEmail(email)
   console.log("user::", user)
-
-  // if(!email) {
-  //   return res.status(400).send('<h2>Add correct email</h2>');
-  // }
-
-  // if(!password) {
-  //   return res.status(400).send('<h2>Password is required!</h2>');
-  // }
-  
-  // if (bcrypt.compareSync(password, user.password)){
-  //   req.session.user_id = user.id;
-  //   return res.redirect('/urls');
-  // }
 
   if (!user || !bcrypt.compareSync(password, user.password)) {
     return res.status(403).send("Wrong Email, Please Enter again.");

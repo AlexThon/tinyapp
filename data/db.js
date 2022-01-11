@@ -36,9 +36,6 @@ const urlDatabase = {
   getLongUrl: function(shortURL) {
     return this[shortURL].longURL;
   },
-  setShortUrl: function (shortURL, longURL, userID) {
-    this[shortURL] = { longURL: longURL, userID: userID };
-  },
   setLongUrl: function (shortURL, longURL) {
     this[shortURL].longURL = longURL;
   },
