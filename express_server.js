@@ -87,7 +87,7 @@ app.get("/urls/:shortURL", (req, res) => {
   const { shortURL} = req.params;
 
   if(!userId) {
-    return res.send('Login to see your URL')
+    return res.send('<h3>You are not logged-in ! <span><a href="/login">login here!</a></span><h3>')
   }
 
   if (!urlDatabase[shortURL].userID) {
@@ -95,7 +95,7 @@ app.get("/urls/:shortURL", (req, res) => {
   }
   // user is logged-in but does not own the url
   if(userId && urlDatabase[shortURL].userID !== userId) {
-    return res.send("Nice try! But you don't own this url.")
+    return res.send("<h3>Nice try! But you don't own this url.</h3>")
   }
 
   const templateVars = {
@@ -111,8 +111,9 @@ app.get("/urls/:shortURL", (req, res) => {
 //catch invalid ID provided
 app.get('/u/:shortURL', (req, res) => {
   const {shortURL} = req.params;
-  const longURL = urlDatabase[shortURL].longURL;
+  const longURL = urlDatabase.getLongUrl(shortURL);
   if (!longURL) {
+    // HTML with error message
     return res.render("invalidID")
   }
   return res.redirect(longURL);
@@ -122,11 +123,10 @@ app.get('/u/:shortURL', (req, res) => {
 
 app.get('/register', (req, res) => {
   const userId = req.session['user_id'];
-  // if(userId) {
-  //   return res.redirect('/urls')
-  // }
-
-  const templateVars = {user: USERS[req.session.user_id]};
+  if(userId) {
+    return res.redirect('/urls')
+  }
+  const templateVars = {user: USERS[userId]};
   return res.render('registration-form', templateVars);
 });
 
