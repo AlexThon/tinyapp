@@ -4,7 +4,7 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 ## Final Product
 
-This page is presented when the user do not have any account
+homepage page
 !["This page is presented when the user do not have any account"](https://github.com/AlexThon/tinyapp/blob/master/doc/createAccount.png)
 
 
