@@ -11,6 +11,7 @@ homepage
 The picture shows the urls created by the user
 !["This picture shows the urls created by the user"](https://github.com/AlexThon/tinyapp/blob/master/doc/urls.png)
 
+creates new tinyURL
 !["The field takes and a long url and creates a tiny url from that after submission"](https://github.com/AlexThon/tinyapp/blob/master/doc/createTinyUrl.png)
 
 ## Dependencies
